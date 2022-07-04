@@ -14,14 +14,14 @@ class CheckDialogFragment(val question: ColoredObject, val answer: ColoredObject
     private lateinit var binding: CheckDialogBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = CheckDialogBinding.inflate(requireActivity().layoutInflater)
+        val inflater = requireActivity().layoutInflater
+        binding = CheckDialogBinding.inflate(LayoutInflater.from(context))
         binding.questionCheck.setColorFilter(question.getColor())
         binding.answerCheck.setColorFilter(answer.getColor())
         val dE = answer.dE(question)
         binding.equality.text = toAnswer(dE)
         binding.dE.text = dE.toString()
-        val inflater = requireActivity().layoutInflater
-        return activity?.let { AlertDialog.Builder(it).apply { setView(inflater.inflate(R.layout.check_dialog, binding.root)) }.create()}
+        return activity?.let { AlertDialog.Builder(it).apply { setView(binding.root) }.create()}
             ?: throw IllegalStateException("Activity cannot be null")
     }
 
