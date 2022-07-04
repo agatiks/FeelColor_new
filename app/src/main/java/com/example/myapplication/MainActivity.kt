@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
 import com.example.myapplication.databinding.ActivityMainBinding
@@ -51,13 +52,19 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
         })
+        binding.check.setOnClickListener {
+            val res = question == answer
+            val dialog = CheckDialogFragment(question, answer)
+            val manager = supportFragmentManager
+            dialog.show(manager, "checkDialog") //todo: create key
+        }
     }
-
 
     private fun setChangedInfo(answer: ColoredObject) {
         binding.tr.text = answer.getR().toString()
         binding.tg.text = answer.getG().toString()
         binding.tb.text = answer.getB().toString()
+        binding.argb.text = answer.toString()
         binding.answerView.setColorFilter(answer.getColor())
     }
 
