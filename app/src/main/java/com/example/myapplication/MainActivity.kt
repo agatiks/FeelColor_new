@@ -5,21 +5,27 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import com.example.myapplication.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var question: ColoredObject
-    private lateinit var answer: ColoredObject
+    private val colorStateViewModel: ColorStateViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        start()
+
+        colorStateViewModel.nextColorEvent.observe(this, { isUpd -> if(isUpd) update() })
+
+        colorStateViewModel.update()
+
+        //todo: A lot of copypaste
         binding.redSeekBar2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-                answer.setR(progress)
-                setChangedInfo(answer)
+                colorStateViewModel.answer.setR(progress)
+                setChangedInfo(colorStateViewModel.answer)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -28,10 +34,11 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
         })
+
         binding.greenSeekBar2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-                answer.setG(progress)
-                setChangedInfo(answer)
+                colorStateViewModel.answer.setG(progress)
+                setChangedInfo(colorStateViewModel.answer)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -40,10 +47,11 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(p0: SeekBar?) {
             }
         })
+
         binding.blueSeekBar2.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seek: SeekBar, progress: Int, fromUser: Boolean) {
-                answer.setB(progress)
-                setChangedInfo(answer)
+                colorStateViewModel.answer.setB(progress)
+                setChangedInfo(colorStateViewModel.answer)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -53,8 +61,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         binding.check.setOnClickListener {
-            val res = question == answer
-            val dialog = CheckDialogFragment(question, answer)
+            val dialog = CheckDialogFragment()
             val manager = supportFragmentManager
             dialog.show(manager, "checkDialog") //todo: create key
         }
@@ -68,10 +75,11 @@ class MainActivity : AppCompatActivity() {
         binding.answerView.setColorFilter(answer.getColor())
     }
 
-    fun start() {
-        question = ColoredObject()
-        answer = ColoredObject(0, 0, 0)
-        binding.questionView.setColorFilter(question.getColor())
-        binding.answerView.setColorFilter(answer.getColor())
+    private fun update() {
+        binding.redSeekBar2.progress = 0 //todo: custom seekBarView or other kind of color choosing interface
+        binding.greenSeekBar2.progress = 0
+        binding.blueSeekBar2.progress = 0
+        binding.questionView.setColorFilter(colorStateViewModel.question.getColor())
+        binding.answerView.setColorFilter(colorStateViewModel.answer.getColor())
     }
 }
